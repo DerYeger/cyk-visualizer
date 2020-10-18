@@ -1,5 +1,6 @@
 package eu.yeger.cyk.visualizer
 
+import eu.yeger.cyk.visualizer.component.app
 import kotlinx.browser.document
 import kotlinx.browser.window
 import react.child
