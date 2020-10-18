@@ -1,5 +1,8 @@
+
+
 plugins {
-    kotlin("js") version "1.4.10"
+    kotlin("js")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 group = "eu.yeger"
 version = "1.0-SNAPSHOT"
@@ -7,24 +10,28 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     jcenter()
-    maven {
-        url = uri("https://dl.bintray.com/kotlin/kotlinx")
-    }
-    maven {
-        url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers")
-    }
-    maven {
-        url = uri("https://dl.bintray.com/deryeger/maven")
-    }
+    maven(url = "https://dl.bintray.com/kotlin/kotlinx")
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-js-wrappers")
+    maven(url = "https://dl.bintray.com/deryeger/maven")
 }
+
 dependencies {
+    val kotlinxHtmlJsVersion: String by project
+    implementation("org.jetbrains.kotlinx:kotlinx-html-js:$kotlinxHtmlJsVersion")
+
+    val kotlinReactVersion: String by project
+    implementation("org.jetbrains:kotlin-react:$kotlinReactVersion")
+    implementation("org.jetbrains:kotlin-react-dom:$kotlinReactVersion")
+
+    val kotlinStyledVersion: String by project
+    implementation("org.jetbrains:kotlin-styled:$kotlinStyledVersion")
+
+    val cykAlgorithmVersion: String by project
+    implementation("eu.yeger:cyk-algorithm:$cykAlgorithmVersion")
+
     testImplementation(kotlin("test-js"))
-    implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.2")
-    implementation("org.jetbrains:kotlin-react:16.13.1-pre.110-kotlin-1.4.10")
-    implementation("org.jetbrains:kotlin-react-dom:16.13.1-pre.110-kotlin-1.4.10")
-    implementation("org.jetbrains:kotlin-styled:1.0.0-pre.110-kotlin-1.4.10")
-    implementation("eu.yeger:cyk-algorithm:0.1.0")
 }
+
 kotlin {
     js {
         browser {
@@ -43,4 +50,8 @@ kotlin {
             }
         }
     }
+}
+
+tasks {
+    getByName("compileKotlinJs").dependsOn(ktlintFormat)
 }
