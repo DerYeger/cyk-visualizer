@@ -33,6 +33,7 @@ val app = functionalComponent<RProps> {
         }
         cykStateList {
             cykStates = cykList
+            key = cykList.firstOrNull().toString()
         }
     }
 }
