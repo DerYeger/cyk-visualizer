@@ -1,23 +1,49 @@
 package eu.yeger.cyk.visualizer.component
 
-import eu.yeger.cyk.model.CYKStart
 import eu.yeger.cyk.model.CYKState
-import eu.yeger.cyk.model.CYKStep
+import eu.yeger.cyk.visualizer.cssClasses
+import kotlinx.css.WhiteSpace
+import kotlinx.css.whiteSpace
 import react.RBuilder
 import react.RProps
 import react.child
 import react.functionalComponent
-import styled.styledPre
+import styled.*
 
 external interface CYKStateProps : RProps {
     var cykState: CYKState
 }
 
 val cykState = functionalComponent<CYKStateProps> { cykStateProps ->
-    styledPre {
-        when (val state = cykStateProps.cykState) {
-            is CYKStart -> +"${state.cykModel}"
-            is CYKStep -> +"${state.cykModel}\nCurrent Rule: ${state.productionRule}"
+    with(cykStateProps.cykState.cykModel) {
+        styledTable {
+            cssClasses("table", "table-bordered")
+            styledThead {
+                cssClasses("thead-dark")
+                styledTr {
+                    word.forEach { terminalSymbol ->
+                        styledTh {
+                            +terminalSymbol.toString()
+                        }
+                    }
+                }
+            }
+            styledTbody {
+                grid.forEach { row ->
+                    styledTr {
+                        row.forEach { nonTerminalSymbolSet ->
+                            styledTd {
+                                styledDiv {
+                                    css {
+                                        whiteSpace = WhiteSpace.pre
+                                    }
+                                    +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
