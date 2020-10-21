@@ -20,6 +20,7 @@ external interface CYKStateListProps : RProps {
 val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     val (index, setIndex) = useState(cykProps.cykStates.lastIndex)
     if (cykProps.cykStates.isEmpty()) return@functionalComponent
+    val cykState = cykProps.cykStates[index]
     styledDiv {
         cssClasses("row", "justify-content-md-center", "mb-3")
         styledButton {
@@ -56,10 +57,15 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     styledDiv {
         cssClasses("row", "mb-3")
         styledDiv {
-            when (val cykState = cykProps.cykStates[index]) {
+            cssClasses("col-8", "pl-0")
+            when (cykState) {
                 is CYKStart -> cykStart(cykState)
                 is CYKStep -> cykStep(cykState)
             }
+        }
+        styledDiv {
+            cssClasses("col-4", "pr-0")
+            grammarDetails(cykState)
         }
     }
 }
@@ -68,7 +74,7 @@ fun RBuilder.cykStateList(cykStates: List<CYKState>) {
     child(cykStateList) {
         attrs.apply {
             this.cykStates = cykStates
-            key = cykStates.firstOrNull().toString()
+            key = cykStates.lastOrNull().toString()
         }
     }
 }
