@@ -16,6 +16,7 @@ import styled.styledTextArea
 
 external interface TextInputProps : RProps {
     var name: String
+    var placeholder: String
     var onValueChange: (String) -> Unit
 }
 
@@ -32,7 +33,7 @@ val textInput = functionalComponent<TextInputProps> { textInputProps ->
         styledInput(type = InputType.text) {
             cssClasses("form-control")
             attrs {
-                placeholder = textInputProps.name
+                placeholder = textInputProps.placeholder
                 onChangeFunction = {
                     val target = it.target as HTMLInputElement
                     textInputProps.onValueChange(target.value)
@@ -42,9 +43,13 @@ val textInput = functionalComponent<TextInputProps> { textInputProps ->
     }
 }
 
-fun RBuilder.textInput(block: TextInputProps.() -> Unit) {
+fun RBuilder.textInput(name: String, placeholder: String, onValueChange: (String) -> Unit) {
     child(textInput) {
-        attrs.apply(block)
+        attrs.apply {
+            this.name = name
+            this.placeholder = placeholder
+            this.onValueChange = onValueChange
+        }
     }
 }
 
@@ -62,7 +67,7 @@ val textAreaInput = functionalComponent<TextInputProps> { textInputProps ->
             cssClasses("form-control")
             attrs {
                 rows = "4"
-                placeholder = textInputProps.name
+                placeholder = textInputProps.placeholder
                 onChangeFunction = {
                     val target = it.target as HTMLTextAreaElement
                     textInputProps.onValueChange(target.value)
@@ -72,8 +77,12 @@ val textAreaInput = functionalComponent<TextInputProps> { textInputProps ->
     }
 }
 
-fun RBuilder.textAreaInput(block: TextInputProps.() -> Unit) {
+fun RBuilder.textAreaInput(name: String, placeholder: String, onValueChange: (String) -> Unit) {
     child(textAreaInput) {
-        attrs.apply(block)
+        attrs.apply {
+            this.name = name
+            this.placeholder = placeholder
+            this.onValueChange = onValueChange
+        }
     }
 }

@@ -21,9 +21,9 @@ val app = functionalComponent<RProps> {
             cssClasses("row")
             +"CYK Visualizer"
         }
-        cykInput { word, startSymbol, productionRules ->
+        cykInput { word, startSymbol, productionRules, includeEmptyProductionRule ->
             val newCYKStates = runningCYK(word) {
-                grammar(startSymbol) { productionRules }
+                grammar(startSymbol, includeEmptyProductionRule = includeEmptyProductionRule) { productionRules }
             }.getOrElse {
                 window.alert(it)
                 emptyList()

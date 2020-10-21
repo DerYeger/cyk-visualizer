@@ -1,32 +1,50 @@
 package eu.yeger.cyk.visualizer.component
 
 import eu.yeger.cyk.visualizer.cssClasses
+import kotlinx.html.InputType
+import kotlinx.html.id
+import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
+import org.w3c.dom.HTMLInputElement
 import react.*
 import styled.styledButton
 import styled.styledDiv
+import styled.styledInput
+import styled.styledLabel
 
 external interface CYKInputProps : RProps {
-    var onInputConfirmed: (String, String, String) -> Unit
+    var onInputConfirmed: (String, String, String, Boolean) -> Unit
 }
 
 val cykInput = functionalComponent<CYKInputProps> { inputProps ->
     val (word, setWord) = useState("")
     val (startSymbol, setStartSymbol) = useState("")
     val (productionRules, setProductionRules) = useState("")
+    val (includeEmptyProductionRule, setIncludeEmptyProductionRule) = useState(false)
 
     styledDiv {
-        textInput {
-            name = "Word"
-            onValueChange = setWord
-        }
-        textInput {
-            name = "Start Symbol"
-            onValueChange = setStartSymbol
-        }
-        textAreaInput {
-            name = "Production Rules"
-            onValueChange = setProductionRules
+        textInput(name = "Word", placeholder = "ε", onValueChange = setWord)
+        textInput(name = "Start Symbol", placeholder = "S", onValueChange = setStartSymbol)
+        textAreaInput(name = "Production Rules", placeholder = "S -> A B\nA -> hello\nB -> world", onValueChange = setProductionRules)
+        styledDiv {
+            cssClasses("row", "form-group", "form-check", "mb-3")
+            styledInput(type = InputType.checkBox) {
+                cssClasses("form-check-input")
+                attrs {
+                    id = "emptyProductionRuleToggle"
+                    onChangeFunction = {
+                        val target = it.target as HTMLInputElement
+                        setIncludeEmptyProductionRule(target.checked)
+                    }
+                }
+            }
+            styledLabel {
+                cssClasses("form-check-label")
+                +"Include empty Production Rule"
+                attrs {
+                    htmlFor = "emptyProductionRuleToggle"
+                }
+            }
         }
         styledDiv {
             cssClasses("row", "mb-3")
@@ -35,7 +53,7 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
                 +"Evaluate"
                 attrs {
                     onClickFunction = {
-                        inputProps.onInputConfirmed(word, startSymbol, productionRules)
+                        inputProps.onInputConfirmed(word, startSymbol, productionRules, includeEmptyProductionRule)
                     }
                 }
             }
@@ -52,13 +70,13 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
     }
 }
 
-fun RBuilder.cykInput(onInputConfirmed: (String, String, String) -> Unit) {
+fun RBuilder.cykInput(onInputConfirmed: (String, String, String, Boolean) -> Unit) {
     child(cykInput) {
         attrs.onInputConfirmed = onInputConfirmed
     }
 }
 
-private fun ((String, String, String) -> Unit).invokeWithExampleData() {
+private fun ((String, String, String, Boolean) -> Unit).invokeWithExampleData() {
     val word = "she eats a fish with a fork"
     val productionRules =
         """
@@ -75,5 +93,5 @@ private fun ((String, String, String) -> Unit).invokeWithExampleData() {
                     N -> fork
                     Det -> a
         """.trimIndent()
-    invoke(word, "S", productionRules)
+    invoke(word, "S", productionRules, false)
 }
