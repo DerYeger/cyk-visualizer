@@ -16,7 +16,6 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
     val (productionRules, setProductionRules) = useState("")
 
     styledDiv {
-        cssClasses("container")
         textInput {
             name = "Word"
             onValueChange = setWord
@@ -30,9 +29,9 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
             onValueChange = setProductionRules
         }
         styledDiv {
-            cssClasses("row", "justify-content-end")
+            cssClasses("row", "mb-3")
             styledButton {
-                cssClasses("btn", "btn-primary", "float-right")
+                cssClasses("btn", "btn-primary", "mr-3")
                 +"Evaluate"
                 attrs {
                     onClickFunction = {
@@ -40,12 +39,41 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
                     }
                 }
             }
+            styledButton {
+                cssClasses("btn", "btn-primary")
+                +"Example"
+                attrs {
+                    onClickFunction = {
+                        inputProps.onInputConfirmed.invokeWithExampleData()
+                    }
+                }
+            }
         }
     }
 }
 
-fun RBuilder.cykInput(block: CYKInputProps.() -> Unit) {
+fun RBuilder.cykInput(onInputConfirmed: (String, String, String) -> Unit) {
     child(cykInput) {
-        attrs.apply(block)
+        attrs.onInputConfirmed = onInputConfirmed
     }
+}
+
+private fun ((String, String, String) -> Unit).invokeWithExampleData() {
+    val word = "she eats a fish with a fork"
+    val productionRules =
+        """
+                    S -> NP VP
+                    VP -> VP PP
+                    VP -> V NP
+                    VP -> eats
+                    PP -> P NP
+                    NP -> Det N
+                    NP -> she
+                    V -> eats
+                    P -> with
+                    N -> fish
+                    N -> fork
+                    Det -> a
+        """.trimIndent()
+    invoke(word, "S", productionRules)
 }

@@ -21,7 +21,7 @@ external interface TextInputProps : RProps {
 
 val textInput = functionalComponent<TextInputProps> { textInputProps ->
     styledDiv {
-        cssClasses("input-group mb-3")
+        cssClasses("row", "input-group mb-3")
         styledDiv {
             cssClasses("input-group-prepend")
             styledSpan {
@@ -50,7 +50,7 @@ fun RBuilder.textInput(block: TextInputProps.() -> Unit) {
 
 val textAreaInput = functionalComponent<TextInputProps> { textInputProps ->
     styledDiv {
-        cssClasses("input-group mb-3")
+        cssClasses("row", "input-group mb-3")
         styledDiv {
             cssClasses("input-group-prepend")
             styledSpan {

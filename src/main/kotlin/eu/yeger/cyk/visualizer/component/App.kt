@@ -13,27 +13,23 @@ import styled.styledDiv
 import styled.styledH1
 
 val app = functionalComponent<RProps> {
-    val (cykList, setCYKList) = useState<List<CYKState>>(emptyList())
+    val (cykStates, setCYKStates) = useState<List<CYKState>>(emptyList())
 
     styledDiv {
-        cssClasses("w-75", "mx-auto")
+        cssClasses("container", "w-75", "mx-auto")
         styledH1 {
+            cssClasses("row")
             +"CYK Visualizer"
         }
-        cykInput {
-            onInputConfirmed = { word, startSymbol, productionRules ->
-                val newCYKStates = runningCYK(word) {
-                    grammar(startSymbol) { productionRules }
-                }.getOrElse {
-                    window.alert(it)
-                    emptyList()
-                }
-                setCYKList(newCYKStates)
+        cykInput { word, startSymbol, productionRules ->
+            val newCYKStates = runningCYK(word) {
+                grammar(startSymbol) { productionRules }
+            }.getOrElse {
+                window.alert(it)
+                emptyList()
             }
+            setCYKStates(newCYKStates)
         }
-        cykStateList {
-            cykStates = cykList
-            key = cykList.firstOrNull().toString()
-        }
+        cykStateList(cykStates)
     }
 }

@@ -21,9 +21,9 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     val (index, setIndex) = useState(cykProps.cykStates.lastIndex)
     if (cykProps.cykStates.isEmpty()) return@functionalComponent
     styledDiv {
-        cssClasses("row", "justify-content-md-center")
+        cssClasses("row", "justify-content-md-center", "mb-3")
         styledButton {
-            cssClasses("btn", "btn-primary", "align-self-center", "col-1")
+            cssClasses("btn", "btn-sm", "align-self-center", "col-1")
             +"<"
             attrs {
                 onClickFunction = {
@@ -44,7 +44,7 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
             }
         }
         styledButton {
-            cssClasses("btn", "btn-primary", "align-self-center", "col-1")
+            cssClasses("btn", "btn-sm", "align-self-center", "col-1")
             +">"
             attrs {
                 onClickFunction = {
@@ -54,7 +54,7 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
         }
     }
     styledDiv {
-        cssClasses("row", "justify-content-md-center")
+        cssClasses("row", "mb-3")
         styledDiv {
             when (val cykState = cykProps.cykStates[index]) {
                 is CYKStart -> cykStart(cykState)
@@ -64,8 +64,11 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     }
 }
 
-fun RBuilder.cykStateList(block: CYKStateListProps.() -> Unit) {
+fun RBuilder.cykStateList(cykStates: List<CYKState>) {
     child(cykStateList) {
-        attrs.apply(block)
+        attrs.apply {
+            this.cykStates = cykStates
+            key = cykStates.firstOrNull().toString()
+        }
     }
 }
