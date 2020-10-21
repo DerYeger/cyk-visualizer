@@ -33,7 +33,7 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
             }
         }
         styledInput(type = InputType.range) {
-            cssClasses("col-10", "col-centered")
+            cssClasses("col-10", "col-centered", "px-0")
             attrs {
                 min = "0"
                 max = "${cykProps.cykStates.lastIndex}"

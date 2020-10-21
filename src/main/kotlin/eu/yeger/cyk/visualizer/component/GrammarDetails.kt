@@ -1,14 +1,15 @@
 package eu.yeger.cyk.visualizer.component
 
 import eu.yeger.cyk.model.CYKState
+import eu.yeger.cyk.model.CYKStep
 import eu.yeger.cyk.visualizer.cssClasses
+import kotlinx.css.FontWeight
+import kotlinx.css.fontWeight
 import react.RBuilder
 import react.RProps
 import react.child
 import react.functionalComponent
-import styled.styledDiv
-import styled.styledH5
-import styled.styledH6
+import styled.*
 
 external interface GrammarDetailsProps : RProps {
     var cykState: CYKState
@@ -16,7 +17,7 @@ external interface GrammarDetailsProps : RProps {
 
 val grammarDetailsComponent = functionalComponent<GrammarDetailsProps> {
     val state = it.cykState
-    styledH5 {
+    styledH4 {
         cssClasses("row", "mb-3")
         +"Grammar"
     }
@@ -24,7 +25,7 @@ val grammarDetailsComponent = functionalComponent<GrammarDetailsProps> {
         cssClasses("row", "mb-3")
         +"Start Symbol: ${state.cykModel.grammar.startSymbol}"
     }
-    styledH6 {
+    styledH5 {
         cssClasses("row", "mb-3")
         +"Production Rules"
     }
@@ -32,6 +33,11 @@ val grammarDetailsComponent = functionalComponent<GrammarDetailsProps> {
         styledDiv {
             cssClasses("row", "mb-3")
             +productionRule.toString()
+            if (state is CYKStep && state.productionRule == productionRule) {
+                css {
+                    fontWeight = FontWeight.bold
+                }
+            }
         }
     }
 }

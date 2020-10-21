@@ -109,10 +109,6 @@ val cykStepComponent = functionalComponent<CYKStepProps> {
                 }
             }
         }
-        styledDiv {
-            cssClasses("row", "justify-content-md-center")
-            +cykStep.productionRule.toString()
-        }
     }
 }
 
