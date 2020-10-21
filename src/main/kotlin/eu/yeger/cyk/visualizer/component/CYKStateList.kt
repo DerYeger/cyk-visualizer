@@ -1,6 +1,8 @@
 package eu.yeger.cyk.visualizer.component
 
+import eu.yeger.cyk.model.CYKStart
 import eu.yeger.cyk.model.CYKState
+import eu.yeger.cyk.model.CYKStep
 import eu.yeger.cyk.visualizer.cssClasses
 import kotlinx.html.InputType
 import kotlinx.html.js.onChangeFunction
@@ -20,8 +22,17 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     if (cykProps.cykStates.isEmpty()) return@functionalComponent
     styledDiv {
         cssClasses("row", "justify-content-md-center")
+        styledButton {
+            cssClasses("btn", "btn-primary", "align-self-center", "col-1")
+            +"<"
+            attrs {
+                onClickFunction = {
+                    setIndex((index - 1).coerceAtLeast(0))
+                }
+            }
+        }
         styledInput(type = InputType.range) {
-            cssClasses("w-100")
+            cssClasses("col-10", "col-centered")
             attrs {
                 min = "0"
                 max = "${cykProps.cykStates.lastIndex}"
@@ -32,24 +43,6 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
                 }
             }
         }
-    }
-    styledDiv {
-        cssClasses("row", "justify-content-md-center")
-        styledButton {
-            cssClasses("btn", "btn-primary", "align-self-center", "col-1")
-            +"<"
-            attrs {
-                onClickFunction = {
-                    setIndex((index - 1).coerceAtLeast(0))
-                }
-            }
-        }
-        styledDiv {
-            cssClasses("col-10", "col-centered")
-            cykState {
-                cykState = cykProps.cykStates[index]
-            }
-        }
         styledButton {
             cssClasses("btn", "btn-primary", "align-self-center", "col-1")
             +">"
@@ -57,6 +50,15 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
                 onClickFunction = {
                     setIndex((index + 1).coerceAtMost(cykProps.cykStates.lastIndex))
                 }
+            }
+        }
+    }
+    styledDiv {
+        cssClasses("row", "justify-content-md-center")
+        styledDiv {
+            when (val cykState = cykProps.cykStates[index]) {
+                is CYKStart -> cykStart(cykState)
+                is CYKStep -> cykStep(cykState)
             }
         }
     }

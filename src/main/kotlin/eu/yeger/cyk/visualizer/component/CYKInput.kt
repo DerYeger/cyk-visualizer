@@ -16,6 +16,7 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
     val (productionRules, setProductionRules) = useState("")
 
     styledDiv {
+        cssClasses("container")
         textInput {
             name = "Word"
             onValueChange = setWord
@@ -28,12 +29,15 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
             name = "Production Rules"
             onValueChange = setProductionRules
         }
-        styledButton {
-            cssClasses("btn", "btn-primary", "float-right")
-            +"Evaluate"
-            attrs {
-                onClickFunction = {
-                    inputProps.onInputConfirmed(word, startSymbol, productionRules)
+        styledDiv {
+            cssClasses("row", "justify-content-end")
+            styledButton {
+                cssClasses("btn", "btn-primary", "float-right")
+                +"Evaluate"
+                attrs {
+                    onClickFunction = {
+                        inputProps.onInputConfirmed(word, startSymbol, productionRules)
+                    }
                 }
             }
         }

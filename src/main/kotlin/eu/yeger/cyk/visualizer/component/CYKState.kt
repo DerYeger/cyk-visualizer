@@ -1,6 +1,7 @@
 package eu.yeger.cyk.visualizer.component
 
-import eu.yeger.cyk.model.CYKState
+import eu.yeger.cyk.model.CYKStart
+import eu.yeger.cyk.model.CYKStep
 import eu.yeger.cyk.visualizer.cssClasses
 import kotlinx.css.WhiteSpace
 import kotlinx.css.whiteSpace
@@ -10,34 +11,36 @@ import react.child
 import react.functionalComponent
 import styled.*
 
-external interface CYKStateProps : RProps {
-    var cykState: CYKState
+external interface CYKStartProps : RProps {
+    var cykStart: CYKStart
 }
 
-val cykState = functionalComponent<CYKStateProps> { cykStateProps ->
-    with(cykStateProps.cykState.cykModel) {
-        styledTable {
-            cssClasses("table", "table-bordered")
-            styledThead {
-                cssClasses("thead-dark")
-                styledTr {
-                    word.forEach { terminalSymbol ->
-                        styledTh {
-                            +terminalSymbol.toString()
+val cykStartComponent = functionalComponent<CYKStartProps> {
+    with(it.cykStart.cykModel) {
+        styledDiv {
+            cssClasses("table-responsive")
+            styledTable {
+                cssClasses("table", "table-bordered")
+                styledThead {
+                    styledTr {
+                        word.forEach { terminalSymbol ->
+                            styledTh {
+                                +terminalSymbol.toString()
+                            }
                         }
                     }
                 }
-            }
-            styledTbody {
-                grid.forEach { row ->
-                    styledTr {
-                        row.forEach { nonTerminalSymbolSet ->
-                            styledTd {
-                                styledDiv {
-                                    css {
-                                        whiteSpace = WhiteSpace.pre
+                styledTbody {
+                    grid.forEach { row ->
+                        styledTr {
+                            row.forEach { nonTerminalSymbolSet ->
+                                styledTd {
+                                    styledDiv {
+                                        css {
+                                            whiteSpace = WhiteSpace.pre
+                                        }
+                                        +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
                                     }
-                                    +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
                                 }
                             }
                         }
@@ -48,8 +51,75 @@ val cykState = functionalComponent<CYKStateProps> { cykStateProps ->
     }
 }
 
-fun RBuilder.cykState(block: CYKStateProps.() -> Unit) {
-    child(cykState) {
-        attrs.apply(block)
+fun RBuilder.cykStart(cykStart: CYKStart) {
+    child(cykStartComponent) {
+        attrs.apply {
+            this.cykStart = cykStart
+        }
+    }
+}
+
+external interface CYKStepProps : RProps {
+    var cykStep: CYKStep
+}
+
+val cykStepComponent = functionalComponent<CYKStepProps> {
+    val cykStep = it.cykStep
+    with(cykStep.cykModel) {
+        styledDiv {
+            cssClasses("table-responsive")
+            styledTable {
+                cssClasses("table", "table-bordered")
+                styledThead {
+                    styledTr {
+                        word.forEachIndexed { index, terminalSymbol ->
+                            styledTh {
+                                +terminalSymbol.toString()
+                                if (cykStep.targetCoordinates.any { coordinates ->
+                                    coordinates.row == -1 && coordinates.column == index
+                                }
+                                ) {
+                                    cssClasses("table-primary")
+                                }
+                            }
+                        }
+                    }
+                }
+                styledTbody {
+                    grid.forEachIndexed { rowIndex, row ->
+                        styledTr {
+                            row.forEachIndexed { columnIndex, nonTerminalSymbolSet ->
+                                styledTd {
+                                    css {
+                                        whiteSpace = WhiteSpace.pre
+                                    }
+                                    +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
+                                    if (cykStep.targetCoordinates.any { coordinates ->
+                                        coordinates.row == rowIndex && coordinates.column == columnIndex
+                                    }
+                                    ) {
+                                        cssClasses("table-primary")
+                                    } else if (cykStep.sourceCoordinates.row == rowIndex && cykStep.sourceCoordinates.column == columnIndex) {
+                                        cssClasses(if (cykStep.ruleWasApplied) "table-success" else "table-danger")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        styledDiv {
+            cssClasses("row", "justify-content-md-center")
+            +cykStep.productionRule.toString()
+        }
+    }
+}
+
+fun RBuilder.cykStep(cykStep: CYKStep) {
+    child(cykStepComponent) {
+        attrs.apply {
+            this.cykStep = cykStep
+        }
     }
 }
