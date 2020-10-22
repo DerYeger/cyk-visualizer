@@ -1,6 +1,7 @@
 package eu.yeger.cyk.visualizer.component
 
 import eu.yeger.cyk.visualizer.cssClasses
+import kotlinx.css.*
 import kotlinx.html.InputType
 import kotlinx.html.js.onChangeFunction
 import org.w3c.dom.HTMLInputElement
@@ -9,10 +10,7 @@ import react.RBuilder
 import react.RProps
 import react.child
 import react.functionalComponent
-import styled.styledDiv
-import styled.styledInput
-import styled.styledSpan
-import styled.styledTextArea
+import styled.*
 
 external interface TextInputProps : RProps {
     var name: String
@@ -22,10 +20,15 @@ external interface TextInputProps : RProps {
 
 val textInput = functionalComponent<TextInputProps> { textInputProps ->
     styledDiv {
-        cssClasses("row", "input-group mb-3")
+        cssClasses("row", "input-group", "mb-3")
         styledDiv {
             cssClasses("input-group-prepend")
             styledSpan {
+                css {
+                    display = Display.block
+                    minWidth = 115.13.px
+                    textAlign = TextAlign.center
+                }
                 cssClasses("input-group-text")
                 +textInputProps.name
             }
@@ -55,11 +58,17 @@ fun RBuilder.textInput(name: String, placeholder: String, onValueChange: (String
 
 val textAreaInput = functionalComponent<TextInputProps> { textInputProps ->
     styledDiv {
-        cssClasses("row", "input-group mb-3")
+        cssClasses("row", "input-group", "mb-3")
         styledDiv {
             cssClasses("input-group-prepend")
             styledSpan {
                 cssClasses("input-group-text")
+                css {
+                    display = Display.block
+                    minWidth = 115.13.px
+                    whiteSpace = WhiteSpace.pre
+                    textAlign = TextAlign.center
+                }
                 +textInputProps.name
             }
         }

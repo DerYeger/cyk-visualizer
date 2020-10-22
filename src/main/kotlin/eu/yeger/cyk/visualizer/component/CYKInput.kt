@@ -25,7 +25,7 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
     styledDiv {
         textInput(name = "Word", placeholder = "ε", onValueChange = setWord)
         textInput(name = "Start Symbol", placeholder = "S", onValueChange = setStartSymbol)
-        textAreaInput(name = "Production Rules", placeholder = "S -> A B\nA -> hello\nB -> world", onValueChange = setProductionRules)
+        textAreaInput(name = "Production\nRules", placeholder = "S -> A B\nA -> hello\nB -> world", onValueChange = setProductionRules)
         styledDiv {
             cssClasses("row", "form-group", "form-check", "mb-3")
             styledInput(type = InputType.checkBox) {
@@ -42,14 +42,14 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
                 cssClasses("form-check-label")
                 +"Include empty Production Rule"
                 attrs {
-                    htmlFor = "emptyProductionRuleToggle"
+                    attributes["htmlFor"] = "emptyProductionRuleToggle"
                 }
             }
         }
         styledDiv {
-            cssClasses("row", "mb-3")
+            cssClasses("row")
             styledButton {
-                cssClasses("btn", "btn-primary", "mr-3")
+                cssClasses("btn", "btn-primary", "col-sm-2", "mr-3", "mb-3")
                 +"Evaluate"
                 attrs {
                     onClickFunction = {
@@ -58,11 +58,29 @@ val cykInput = functionalComponent<CYKInputProps> { inputProps ->
                 }
             }
             styledButton {
-                cssClasses("btn", "btn-primary")
-                +"Example"
+                cssClasses("btn", "btn-secondary", "col-sm-2", "mr-3", "mb-3")
+                +"Example 1"
                 attrs {
                     onClickFunction = {
-                        inputProps.onInputConfirmed.invokeWithExampleData()
+                        inputProps.onInputConfirmed.invokeWithFirstExampleGrammar()
+                    }
+                }
+            }
+            styledButton {
+                cssClasses("btn", "btn-secondary", "col-sm-2", "mr-3", "mb-3")
+                +"Example 2"
+                attrs {
+                    onClickFunction = {
+                        inputProps.onInputConfirmed.invokeWithSecondExampleGrammar()
+                    }
+                }
+            }
+            styledButton {
+                cssClasses("btn", "btn-secondary", "col-sm-2", "mr-3", "mb-3")
+                +"Example 3"
+                attrs {
+                    onClickFunction = {
+                        inputProps.onInputConfirmed.invokeWithThirdExampleGrammar()
                     }
                 }
             }
@@ -76,11 +94,43 @@ fun RBuilder.cykInput(onInputConfirmed: (String, String, String, Boolean) -> Uni
     }
 }
 
-private fun ((String, String, String, Boolean) -> Unit).invokeWithExampleData() {
+private fun ((String, String, String, Boolean) -> Unit).invokeWithFirstExampleGrammar() {
+    val word = "hello world"
+    val productionRules =
+        """
+                    S -> A B
+                    A -> hello
+                    B -> world
+        """.trimIndent()
+    invoke(word, "S", productionRules, false)
+}
+
+private fun ((String, String, String, Boolean) -> Unit).invokeWithSecondExampleGrammar() {
     val word = "she eats a fish with a fork"
     val productionRules =
         """
                     S -> NP VP
+                    VP -> VP PP
+                    VP -> V NP
+                    VP -> eats
+                    PP -> P NP
+                    NP -> Det N
+                    NP -> she
+                    V -> eats
+                    P -> with
+                    N -> fish
+                    N -> fork
+                    Det -> a
+        """.trimIndent()
+    invoke(word, "S", productionRules, false)
+}
+
+private fun ((String, String, String, Boolean) -> Unit).invokeWithThirdExampleGrammar() {
+    val word = "she eats a fish with a fork"
+    val productionRules =
+        """
+                    S -> NP PP
+                    VP -> NP VP
                     VP -> VP PP
                     VP -> V NP
                     VP -> eats
