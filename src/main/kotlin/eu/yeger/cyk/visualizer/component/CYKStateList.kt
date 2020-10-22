@@ -16,9 +16,16 @@ external interface CYKStateListProps : RProps {
 }
 
 val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
-    val (index, setIndex) = useState(cykProps.cykStates.lastIndex)
-    if (cykProps.cykStates.isEmpty()) return@functionalComponent
-    val cykState = cykProps.cykStates[index]
+    val cykStates = cykProps.cykStates
+    val (index, setIndex) = useState(cykStates.lastIndex)
+    val (stopTimer, setStopTimer) = useState(false)
+
+    val updateIndex = { newIndex: Int ->
+        setIndex(newIndex.coerceIn(0..cykStates.lastIndex))
+    }
+
+    if (cykStates.isEmpty()) return@functionalComponent
+    val cykState = cykStates[index]
     styledDiv {
         cssClasses("row", "justify-content-md-center", "mb-3")
         styledButton {
@@ -26,7 +33,8 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
             +"<"
             attrs {
                 onClickFunction = {
-                    setIndex((index - 1).coerceAtLeast(0))
+                    setStopTimer(true)
+                    updateIndex(index - 1)
                 }
             }
         }
@@ -34,11 +42,12 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
             cssClasses("col-10", "col-centered", "px-0")
             attrs {
                 min = "0"
-                max = "${cykProps.cykStates.lastIndex}"
+                max = "${cykStates.lastIndex}"
                 value = "$index"
                 onChangeFunction = {
                     val target = it.target as HTMLInputElement
-                    setIndex(target.value.toInt())
+                    setStopTimer(true)
+                    updateIndex(target.value.toInt())
                 }
             }
         }
@@ -47,7 +56,8 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
             +">"
             attrs {
                 onClickFunction = {
-                    setIndex((index + 1).coerceAtMost(cykProps.cykStates.lastIndex))
+                    setStopTimer(true)
+                    updateIndex(index + 1)
                 }
             }
         }
@@ -55,16 +65,30 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
     styledDiv {
         cssClasses("row", "mb-3")
         styledDiv {
-            cssClasses("col-8", "pl-0")
+            cssClasses("col-sm-8", "pl-0")
             cykState(cykState)
-//            when (cykState) {
-//                is CYKState.Start -> cykStart(cykState)
-//                is CYKState.Step -> cykStep(cykState)
-//                is CYKState.Done -> cykState
-//            }
         }
         styledDiv {
-            cssClasses("col-4", "pr-0")
+            cssClasses("col-sm-4", "pr-0")
+            styledDiv {
+                cssClasses("row", "mb-3")
+                toggleTimer(
+                    interval = 500,
+                    onStart = {
+                        if (index == cykStates.lastIndex) {
+                            setIndex(0)
+                        }
+                    },
+                    onTick = {
+                        updateIndex(index + 1)
+                        if (index == cykStates.lastIndex) {
+                            setStopTimer(true)
+                        }
+                    },
+                    stopTimer = stopTimer,
+                    onTimerStopped = { setStopTimer(false) }
+                )
+            }
             grammarDetails(cykState)
         }
     }
