@@ -1,7 +1,6 @@
 package eu.yeger.cyk.visualizer.component
 
 import eu.yeger.cyk.model.CYKState
-import eu.yeger.cyk.model.CYKStep
 import eu.yeger.cyk.visualizer.cssClasses
 import kotlinx.css.FontWeight
 import kotlinx.css.fontWeight
@@ -23,17 +22,17 @@ val grammarDetailsComponent = functionalComponent<GrammarDetailsProps> {
     }
     styledDiv {
         cssClasses("row", "mb-3")
-        +"Start Symbol: ${state.cykModel.grammar.startSymbol}"
+        +"Start Symbol: ${state.model.grammar.startSymbol}"
     }
     styledH5 {
         cssClasses("row", "mb-3")
         +"Production Rules"
     }
-    state.cykModel.grammar.productionRuleSet.forEach { productionRule ->
+    state.model.grammar.productionRuleSet.forEach { productionRule ->
         styledDiv {
             cssClasses("row", "mb-3")
             +productionRule.toString()
-            if (state is CYKStep && state.productionRule == productionRule) {
+            if (state is CYKState.Step && state.productionRule == productionRule) {
                 css {
                     fontWeight = FontWeight.bold
                 }

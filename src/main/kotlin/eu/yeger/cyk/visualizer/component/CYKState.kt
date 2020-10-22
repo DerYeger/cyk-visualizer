@@ -1,7 +1,6 @@
 package eu.yeger.cyk.visualizer.component
 
-import eu.yeger.cyk.model.CYKStart
-import eu.yeger.cyk.model.CYKStep
+import eu.yeger.cyk.model.CYKState
 import eu.yeger.cyk.visualizer.cssClasses
 import kotlinx.css.WhiteSpace
 import kotlinx.css.whiteSpace
@@ -11,61 +10,13 @@ import react.child
 import react.functionalComponent
 import styled.*
 
-external interface CYKStartProps : RProps {
-    var cykStart: CYKStart
+external interface CYKStateProps : RProps {
+    var cykState: CYKState
 }
 
-val cykStartComponent = functionalComponent<CYKStartProps> {
-    with(it.cykStart.cykModel) {
-        styledDiv {
-            cssClasses("table-responsive")
-            styledTable {
-                cssClasses("table", "table-bordered")
-                styledThead {
-                    styledTr {
-                        word.forEach { terminalSymbol ->
-                            styledTh {
-                                +terminalSymbol.toString()
-                            }
-                        }
-                    }
-                }
-                styledTbody {
-                    grid.forEach { row ->
-                        styledTr {
-                            row.forEach { nonTerminalSymbolSet ->
-                                styledTd {
-                                    styledDiv {
-                                        css {
-                                            whiteSpace = WhiteSpace.pre
-                                        }
-                                        +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-fun RBuilder.cykStart(cykStart: CYKStart) {
-    child(cykStartComponent) {
-        attrs.apply {
-            this.cykStart = cykStart
-        }
-    }
-}
-
-external interface CYKStepProps : RProps {
-    var cykStep: CYKStep
-}
-
-val cykStepComponent = functionalComponent<CYKStepProps> {
-    val cykStep = it.cykStep
-    with(cykStep.cykModel) {
+val cykStateComponent = functionalComponent<CYKStateProps> {
+    val cykState = it.cykState
+    with(cykState.model) {
         styledDiv {
             cssClasses("table-responsive")
             styledTable {
@@ -75,11 +26,13 @@ val cykStepComponent = functionalComponent<CYKStepProps> {
                         word.forEachIndexed { index, terminalSymbol ->
                             styledTh {
                                 +terminalSymbol.toString()
-                                if (cykStep.targetCoordinates.any { coordinates ->
+                                if (cykState is CYKState.Step && cykState.targetCoordinates.any { coordinates ->
                                     coordinates.row == -1 && coordinates.column == index
                                 }
                                 ) {
                                     cssClasses("table-primary")
+                                } else if (cykState is CYKState.Done) {
+                                    cssClasses(if (cykState.wordIsMemberOfLanguage) "table-success" else "table-danger")
                                 }
                             }
                         }
@@ -94,13 +47,19 @@ val cykStepComponent = functionalComponent<CYKStepProps> {
                                         whiteSpace = WhiteSpace.pre
                                     }
                                     +nonTerminalSymbolSet.joinToString(", ").ifEmpty { " " }
-                                    if (cykStep.targetCoordinates.any { coordinates ->
-                                        coordinates.row == rowIndex && coordinates.column == columnIndex
-                                    }
-                                    ) {
-                                        cssClasses("table-primary")
-                                    } else if (cykStep.sourceCoordinates.row == rowIndex && cykStep.sourceCoordinates.column == columnIndex) {
-                                        cssClasses(if (cykStep.ruleWasApplied) "table-success" else "table-danger")
+                                    if (cykState is CYKState.Step) {
+                                        if (cykState.targetCoordinates.any { coordinates ->
+                                            coordinates.row == rowIndex && coordinates.column == columnIndex
+                                        }
+                                        ) {
+                                            // is target of production rule
+                                            cssClasses("table-primary")
+                                        } else if (cykState.sourceCoordinates.row == rowIndex && cykState.sourceCoordinates.column == columnIndex) {
+                                            // is source of production rule
+                                            cssClasses(if (cykState.productionRuleWasApplied) "table-success" else "table-danger")
+                                        }
+                                    } else if (cykState is CYKState.Done && rowIndex == grid.lastIndex) {
+                                        cssClasses(if (cykState.wordIsMemberOfLanguage) "table-success" else "table-danger")
                                     }
                                 }
                             }
@@ -112,10 +71,10 @@ val cykStepComponent = functionalComponent<CYKStepProps> {
     }
 }
 
-fun RBuilder.cykStep(cykStep: CYKStep) {
-    child(cykStepComponent) {
+fun RBuilder.cykState(cykState: CYKState) {
+    child(cykStateComponent) {
         attrs.apply {
-            this.cykStep = cykStep
+            this.cykState = cykState
         }
     }
 }

@@ -1,8 +1,6 @@
 package eu.yeger.cyk.visualizer.component
 
-import eu.yeger.cyk.model.CYKStart
 import eu.yeger.cyk.model.CYKState
-import eu.yeger.cyk.model.CYKStep
 import eu.yeger.cyk.visualizer.cssClasses
 import kotlinx.html.InputType
 import kotlinx.html.js.onChangeFunction
@@ -58,10 +56,12 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
         cssClasses("row", "mb-3")
         styledDiv {
             cssClasses("col-8", "pl-0")
-            when (cykState) {
-                is CYKStart -> cykStart(cykState)
-                is CYKStep -> cykStep(cykState)
-            }
+            cykState(cykState)
+//            when (cykState) {
+//                is CYKState.Start -> cykStart(cykState)
+//                is CYKState.Step -> cykStep(cykState)
+//                is CYKState.Done -> cykState
+//            }
         }
         styledDiv {
             cssClasses("col-4", "pr-0")
