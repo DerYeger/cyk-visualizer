@@ -10,17 +10,19 @@ import react.RProps
 import react.functionalComponent
 import react.useState
 import styled.styledDiv
-import styled.styledH1
+import styled.styledImg
 
 val app = functionalComponent<RProps> {
     val (cykStates, setCYKStates) = useState<List<CYKState>>(emptyList())
-
     styledDiv {
-        cssClasses("container", "w-75", "mx-auto")
-        styledH1 {
-            cssClasses("row")
-            +"CYK Visualizer"
+        styledImg(alt = "CYK Visualizer", src = "cyk-visualizer-logo.png") {
+            cssClasses("row", "mb-3", "mt-3")
+            attrs {
+                width = "128"
+                height = "128"
+            }
         }
+        cssClasses("container", "w-75", "mx-auto")
         cykInput { word, startSymbol, productionRules, includeEmptyProductionRule ->
             val newCYKStates = runningCYK(word) {
                 grammar(startSymbol, includeEmptyProductionRule = includeEmptyProductionRule) { productionRules }
