@@ -18,7 +18,6 @@ val app = functionalComponent<RProps> {
         styledImg(alt = "CYK Visualizer", src = "cyk-visualizer-logo.png") {
             cssClasses("row", "mb-3", "mt-3")
             attrs {
-                width = "128"
                 height = "128"
             }
         }
