@@ -63,7 +63,7 @@ val cykStateList = functionalComponent<CYKStateListProps> { cykProps ->
         }
     }
     styledDiv {
-        cssClasses("row", "mb-3")
+        cssClasses("row")
         styledDiv {
             cssClasses("col-sm-8", "pl-0")
             cykState(cykState)
